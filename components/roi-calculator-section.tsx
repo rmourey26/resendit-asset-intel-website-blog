@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calculator, TrendingUp, Clock, Shield, Target, BarChart3, AlertTriangle, Building2 } from "lucide-react"
+import { ROIAssessmentDialog } from "@/components/roi-assessment-dialog"
 
 interface ComprehensiveROIInputs {
   // Organization Profile
@@ -162,6 +163,7 @@ export function ROICalculatorSection() {
   const [selectedPlan, setSelectedPlan] = useState(0)
   const [results, setResults] = useState<ComprehensiveROIResults | null>(null)
   const [activeTab, setActiveTab] = useState("organization")
+  const [showAssessmentDialog, setShowAssessmentDialog] = useState(false)
 
   const calculateComprehensiveROI = () => {
     const industryData = industryMultipliers[inputs.industry as keyof typeof industryMultipliers]
@@ -716,7 +718,10 @@ export function ROICalculatorSection() {
                       </div>
                     </div>
 
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-sm">
+                    <Button
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-sm"
+                      onClick={() => setShowAssessmentDialog(true)}
+                    >
                       Request Detailed ROI Assessment
                     </Button>
                   </div>
@@ -740,6 +745,8 @@ export function ROICalculatorSection() {
           </p>
         </motion.div>
       </div>
+
+      <ROIAssessmentDialog open={showAssessmentDialog} onOpenChange={setShowAssessmentDialog} />
     </section>
   )
 }

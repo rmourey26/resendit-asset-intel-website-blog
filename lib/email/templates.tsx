@@ -39,6 +39,21 @@ interface NewsletterNotificationData {
   subscriberId: string
 }
 
+interface ROIAssessmentRequestData {
+  name: string
+  email: string
+  company: string
+  phone?: string
+  industry: string
+  employees: number
+  currentChallenges: string
+}
+
+interface ROIAssessmentConfirmationData {
+  name: string
+  email: string
+}
+
 export function DemoRequestEmail({ data, inquiryId }: { data: DemoRequestData; inquiryId: string }) {
   return (
     <Html>
@@ -789,6 +804,149 @@ Source: Website Newsletter Form
 Status: Active
 
 New subscriber added to newsletter list.
+    `,
+  }
+}
+
+export function createROIAssessmentRequestEmail(formData: ROIAssessmentRequestData) {
+  const logoUrl = "https://resend-it.com/email-logo.png"
+
+  return {
+    subject: `ROI Assessment Request from ${formData.company}`,
+    html: `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ROI Assessment Request from ${formData.company}</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #ffffff;">
+        <div style="max-width: 600px; margin: 0 auto;">
+          <div style="background-color: #ffffff; padding: 32px 20px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+            <img src="${logoUrl}" alt="Resend-It" style="height: 40px; width: auto; max-width: 200px; margin-bottom: 16px;">
+            <h1 style="margin: 0; color: #1e293b; font-size: 24px; font-weight: 600;">ROI Assessment Request</h1>
+          </div>
+          
+          <div style="padding: 32px 20px; background-color: #f8fafc;">
+            <h2 style="color: #1e293b; font-size: 20px; margin: 0 0 20px 0;">Contact Information</h2>
+            
+            <div style="background-color: #ffffff; padding: 24px; border-radius: 8px; margin-bottom: 24px; border-left: 4px solid #4f46e5;">
+              <p style="margin: 0 0 8px 0; color: #374151;"><strong>Name:</strong> ${formData.name}</p>
+              <p style="margin: 0 0 8px 0; color: #374151;"><strong>Email:</strong> ${formData.email}</p>
+              <p style="margin: 0 0 8px 0; color: #374151;"><strong>Company:</strong> ${formData.company}</p>
+              <p style="margin: 0 0 8px 0; color: #374151;"><strong>Phone:</strong> ${formData.phone || "Not provided"}</p>
+              <p style="margin: 0 0 8px 0; color: #374151;"><strong>Industry:</strong> ${formData.industry}</p>
+              <p style="margin: 0; color: #374151;"><strong>Employees:</strong> ${formData.employees}</p>
+            </div>
+            
+            <h3 style="color: #1e293b; font-size: 18px; margin: 0 0 12px 0;">Current Challenges</h3>
+            <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; border-left: 4px solid #06b6d4;">
+              <p style="margin: 0; color: #374151; line-height: 1.6;">${formData.currentChallenges}</p>
+            </div>
+            
+            <div style="background-color: #dbeafe; padding: 20px; border-radius: 8px; margin-top: 24px;">
+              <p style="margin: 0; color: #1e40af;"><strong>Action Required:</strong> Schedule a detailed ROI assessment call with this prospect within 24 hours.</p>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+    `,
+    text: `
+ROI Assessment Request from ${formData.company}
+
+Contact Information:
+Name: ${formData.name}
+Email: ${formData.email}
+Company: ${formData.company}
+Phone: ${formData.phone || "Not provided"}
+Industry: ${formData.industry}
+Employees: ${formData.employees}
+
+Current Challenges:
+${formData.currentChallenges}
+
+Action Required: Schedule a detailed ROI assessment call with this prospect within 24 hours.
+    `,
+  }
+}
+
+export function createROIAssessmentConfirmationEmail(name: string, email: string) {
+  const logoUrl = "https://resend-it.com/email-logo.png"
+
+  return {
+    subject: "Your ROI Assessment Request - We'll Be In Touch Soon!",
+    html: `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ROI Assessment Request Received</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #ffffff;">
+        <div style="max-width: 600px; margin: 0 auto;">
+          <div style="background-color: #ffffff; padding: 32px 20px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+            <img src="${logoUrl}" alt="Resend-It" style="height: 44px; width: auto; max-width: 224px; margin-bottom: 20px;">
+            <h1 style="margin: 0; color: #1e293b; font-size: 24px; font-weight: 600;">Thank You for Your Interest!</h1>
+          </div>
+          
+          <div style="padding: 32px 20px;">
+            <h2 style="color: #1e293b; font-size: 20px; margin: 0 0 16px 0;">Hi ${name},</h2>
+            
+            <p style="color: #64748b; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+              Thank you for requesting a detailed ROI assessment from Resend-It. We've received your request and our team is excited to help you understand the transformative impact our AI-powered platform can have on your organization.
+            </p>
+            
+            <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <h3 style="color: #1e293b; font-size: 18px; margin: 0 0 12px 0;">What happens next?</h3>
+              <p style="color: #64748b; line-height: 1.6; margin: 0;">
+                • Our ROI specialists will review your information<br>
+                • We'll reach out within 24 hours to schedule your assessment<br>
+                • You'll receive a comprehensive, customized ROI analysis<br>
+                • We'll discuss implementation strategies tailored to your needs
+              </p>
+            </div>
+            
+            <p style="color: #64748b; font-size: 16px; line-height: 1.6; margin: 0 0 32px 0;">
+              In the meantime, feel free to explore our platform features and resources. If you have any immediate questions, don't hesitate to reach out to us at <a href="mailto:help@resend-it.com" style="color: #4f46e5;">help@resend-it.com</a>.
+            </p>
+            
+            <div style="text-align: center; margin: 32px 0;">
+              <a href="https://resend-it.com" style="display: inline-block; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600;">
+                Explore Our Platform
+              </a>
+            </div>
+            
+            <p style="color: #9ca3af; font-size: 14px; margin: 0;">
+              Best regards,<br>
+              The Resend-It Team
+            </p>
+          </div>
+        </div>
+      </body>
+    </html>
+    `,
+    text: `
+Thank You for Your Interest!
+
+Hi ${name},
+
+Thank you for requesting a detailed ROI assessment from Resend-It. We've received your request and our team is excited to help you understand the transformative impact our AI-powered platform can have on your organization.
+
+What happens next?
+• Our ROI specialists will review your information
+• We'll reach out within 24 hours to schedule your assessment
+• You'll receive a comprehensive, customized ROI analysis
+• We'll discuss implementation strategies tailored to your needs
+
+In the meantime, feel free to explore our platform features and resources. If you have any immediate questions, don't hesitate to reach out to us at help@resend-it.com.
+
+Visit our platform: https://resend-it.com
+
+Best regards,
+The Resend-It Team
     `,
   }
 }

@@ -7,6 +7,8 @@ import {
   createContactNotificationEmail,
   createNewsletterWelcomeEmail,
   createNewsletterNotificationEmail,
+  createROIAssessmentRequestEmail,
+  createROIAssessmentConfirmationEmail,
 } from "@/lib/email/templates"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -179,6 +181,71 @@ export async function sendNewsletterNotificationEmail(email: string, subscriberI
     return { success: true, data }
   } catch (error) {
     console.error("[v0] Newsletter notification email action error:", error)
+    throw error
+  }
+}
+
+export async function sendROIAssessmentRequest(formData: {
+  name: string
+  email: string
+  company: string
+  phone?: string
+  industry: string
+  employees: number
+  currentChallenges: string
+}) {
+  try {
+    console.log("[v0] Sending ROI assessment request notification")
+
+    const { subject, html, text } = createROIAssessmentRequestEmail(formData)
+
+    // Send notification to help@resend-it.com
+    const { data: notificationData, error: notificationError } = await resend.emails.send({
+      from: "no-reply@updates.resend-it.com",
+      to: ["help@resend-it.com"],
+      subject,
+      html,
+      text,
+      tags: [
+        { name: "type", value: "roi-assessment-request" },
+        { name: "company", value: formData.company.replace(/[^a-zA-Z0-9_-]/g, "_") },
+      ],
+      reply_to: formData.email,
+    })
+
+    if (notificationError) {
+      console.error("[v0] ROI assessment notification error:", notificationError)
+      throw new Error(`Failed to send notification: ${notificationError.message}`)
+    }
+
+    console.log("[v0] ROI assessment notification sent successfully:", notificationData)
+
+    // Send confirmation to user
+    const confirmationEmail = createROIAssessmentConfirmationEmail(formData.name, formData.email)
+
+    const { data: confirmationData, error: confirmationError } = await resend.emails.send({
+      from: "no-reply@updates.resend-it.com",
+      to: [formData.email],
+      subject: confirmationEmail.subject,
+      html: confirmationEmail.html,
+      text: confirmationEmail.text,
+      tags: [
+        { name: "type", value: "roi-assessment-confirmation" },
+        { name: "user", value: formData.name.replace(/[^a-zA-Z0-9_-]/g, "_") },
+      ],
+      reply_to: "help@resend-it.com",
+    })
+
+    if (confirmationError) {
+      console.error("[v0] ROI assessment confirmation error:", confirmationError)
+      // Don't throw here - notification was sent successfully
+    } else {
+      console.log("[v0] ROI assessment confirmation sent successfully:", confirmationData)
+    }
+
+    return { success: true, data: { notificationData, confirmationData } }
+  } catch (error) {
+    console.error("[v0] ROI assessment email action error:", error)
     throw error
   }
 }
